@@ -1,0 +1,6 @@
+
+config.json
+service-account.json
+.idea
+.venv
+.vscode
