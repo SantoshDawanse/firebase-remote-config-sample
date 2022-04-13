@@ -128,13 +128,15 @@ def main():
   elif args.action and args.action == 'rollback' and args.version:
     _rollback(args.version)
   else:
-    print('''Invalid command. Please use one of the following commands:
-python configure.py --action=get
-python configure.py --action=publish --etag=<LATEST_ETAG>
-python configure.py --action=versions
-python configure.py --action=rollback --version=<TEMPLATE_VERSION_NUMBER>''')
-
-
+    print(
+      '''
+      Invalid command. Please use one of the following commands:
+      python configure.py --action=get
+      python configure.py --action=publish
+      python configure.py --action=versions
+      python configure.py --action=rollback --version=<TEMPLATE_VERSION_NUMBER>
+      '''
+    )
 
 if __name__ == '__main__':
   main()
