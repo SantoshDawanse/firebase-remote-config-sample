@@ -23,6 +23,9 @@ Getting started
 Run
 ---
 
+- Create a virtual environment and activate it `python -m venv .venv && source .venv/bin/activate`
+- Install the requirements `pip install -r requirements.txt`
+
 - Get active template
   - Run `python configure.py --action=get` to retrieve the template.
     - The returned template is stored in a file named `config.json`.
