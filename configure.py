@@ -1,6 +1,8 @@
 import argparse
+from typing import Any
 import requests
 import io
+import json
 
 from oauth2client.service_account import ServiceAccountCredentials
 
@@ -22,6 +24,16 @@ def _get_access_token():
   access_token_info = credentials.get_access_token()
   return access_token_info.access_token
 # [END retrieve_access_token]
+
+def _load_template() -> Any:
+  template = {}
+  try:
+    with open("config.json") as stream:
+      template = json.load(stream)
+    stream.close()
+    return template
+  except IOError:
+    print("config.json file not found.")
 
 def _get_etag():
   headers = {
@@ -111,13 +123,70 @@ def _publish():
     print('Unable to publish template.')
     print(resp.text)
 
+def _update_parameter(args):
+  try:
+    template = _load_template()
+
+    if not args.old_param in template['parameters'].keys():
+      raise ValueError
+    
+    print(template["parameters"])
+    template['parameters'][args.new_param] = template['parameters'].pop(args.old_param)
+    print(template["parameters"])
+  except IOError:
+    print("config.json file not found.")
+  except ValueError:
+    print(f"The {args.old_param} parameter is not found.")
+
+def _update_condition(args):
+  valid_condition_keys = set(["name", "expression", "tagColor"])
+  try:
+    template = _load_template()
+    value = args.condition
+    deserialize_value = json.loads(f"{value}")
+    if not set(deserialize_value.keys()).issubset(valid_condition_keys):
+      raise ValueError
+
+    if [ob for ob in template["conditions"] if ob == value]:
+      print("No need to update")
+    # check if condition exists in config.json
+    elif deserialize_value["name"] in [value["name"] for value in template["conditions"]]:
+
+      print("Updating...")
+      # template["conditions"] = {**template["conditions"][]}
+      print(deserialize_value["name"])
+    else:
+      print("Creating...")
+      template["conditions"].append(f"{value}")
+
+  except ValueError:
+    print("Invalid keys in condition.")
+  except Exception as e:
+    print(e)
+
 
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--action')
   parser.add_argument('--etag')
   parser.add_argument('--version')
+
+  sub_parsers = parser.add_subparsers()
+
+  # add sub command to update parameter
+  update_parameter = sub_parsers.add_parser("update-parameter", help="update parameters")
+  update_parameter.add_argument("--old-param", help="old parameter name that exists", required=True)
+  update_parameter.add_argument("--new-param", help="new parameter name", required=True)
+  update_parameter.set_defaults(func=_update_parameter)
+
+  update_condition = sub_parsers.add_parser("update-condition", help="update conditions")
+  update_condition.add_argument("--condition", required=True, help="condition in json format")
+  update_condition.set_defaults(func=_update_condition)
+
   args = parser.parse_args()
+
+  if "func" in args:
+    args.func(args)
 
   if args.action and args.action == 'get':
     _get()
