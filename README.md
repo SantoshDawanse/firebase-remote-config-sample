@@ -1,4 +1,4 @@
-Firebase Remote Config REST API Python Quickstart
+Firebase Remote Config REST API Python
 ===============================================
 
 Note: This readme file is edited for this project. Original readme file can be found [here](https://github.com/firebase/quickstart-python/tree/master/config)
@@ -9,8 +9,7 @@ app demonstrates retrieving and updating the Firebase Remote Config template.
 Introduction
 ------------
 
-This is a simple example of using the Firebase Remote Config REST API to update
-the Remote Config template being used by clients apps.
+This is a demonstration of publishing, modifying and validating firebase Remote Config template being used by clients apps using the Firebase Remote Config REST API.
 
 Getting started
 ---------------
@@ -18,23 +17,31 @@ Getting started
 1. [Add Firebase to your Android Project](https://firebase.google.com/docs/android/setup).
 2. Create a service account as described in [Adding Firebase to your Server](https://firebase.google.com/docs/admin/setup) and download the JSON file.
   - Copy the private key JSON file to this folder and rename it to `service-account.json`.
-3. Change the `PROJECT_ID` variable in `configure.py` to your project ID.
+3. Change the `PROJECT_ID` variable in `.envrc` to your project ID.
 
 Run
 ---
 
 - Create a virtual environment and activate it `python -m venv .venv && source .venv/bin/activate`
 - Install the requirements `pip install -r requirements.txt`
+- Export environment variables `source .envrc`
+  - `ENVIRONMENT` is your environment. eg: `dev`, `pre-prod`, etc.
 
 - Get active template
   - Run `python configure.py --action=get` to retrieve the template.
-    - The returned template is stored in a file named `config.json`.
+    - The returned template is stored in a file named `config-{ENVIRONMENT}.json`.
     - Note the Etag printed to the console you will need to use it when publishing template updates.
 - Update the template
   - Run `python configure.py --action=publish` to update the template.
     - Latest etag is given automatically
   - Confirm in the console that the template has been updated.
     - At this point mobile clients can fetch the updated values.
+- Update conditions in the template
+  - Run `python configure.py update-condition` to update the conditions. It depends on `update-conditions.json` where multiple conditions can be present.
+  - If the template is valid then the updated template will be published.
+- Update parameters in the template
+  - Run `python configure.py update-parameter` to update the parameters. It depends on `update-parameters.json` where multiple parameters can be present.
+  - If the template is valid then the updated template will be published.
 - View existing versions
   - Run `python configure.py --action=versions` to print the
     last 5 template versions.
