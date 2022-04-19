@@ -173,13 +173,14 @@ def _update_parameter(args):
     for parameter, values in parameters["parameters"].items():
       existing_params[parameter] = values
 
-    # validate and publish remote config
-    resp = _validate()
-    if resp.status_code == 200:
-      _publish()
-    else:
-      print('The remote config template is not valid.')
-      print(resp.text)
+    if hasattr(args, "update-parameter"):
+      # validate and publish remote config
+      resp = _validate()
+      if resp.status_code == 200:
+        _publish()
+      else:
+        print('The remote config template is not valid.')
+        print(resp.text)
   except IOError:
     print("File config.json not found in current directory.")
   except ValueError:
@@ -223,19 +224,38 @@ def _update_condition(args):
         # update the config.json
         _write_template(template)
     
-    # validate and publish remote config
-    resp = _validate()
-    if resp.status_code == 200:
-      _publish()
-    else:
-      print('The remote config template is not valid.')
-      print(resp.text)
+    if hasattr(args, "update-condition"):
+      # validate and publish remote config
+      resp = _validate()
+      if resp.status_code == 200:
+        _publish()
+      else:
+        print('The remote config template is not valid.')
+        print(resp.text)
 
   except ValueError:
     print("Invalid keys in condition.")
   except Exception as e:
     print(e)
 
+# update remote config
+def _update_remote_config(args):
+  # fetch config from firebase remote config
+  _get()
+
+  # update conditions
+  _update_condition(args)
+
+  # update parameters
+  _update_parameter(args)
+
+  # validate and publish remote config
+  resp = _validate()
+  if resp.status_code == 200:
+    _publish()
+  else:
+    print('The remote config template is not valid.')
+    print(resp.text)
 
 def main():
   parser = argparse.ArgumentParser()
@@ -251,6 +271,10 @@ def main():
   # add sub command to update conditions
   update_condition = sub_parsers.add_parser("update-condition", help="update conditions")
   update_condition.set_defaults(func=_update_condition)
+
+  # add sub command to update remote config
+  update_remote_config = sub_parsers.add_parser("update-remote-config", help="update remote config from config files.")
+  update_remote_config.set_defaults(func=_update_remote_config)
 
   args = parser.parse_args()
 
