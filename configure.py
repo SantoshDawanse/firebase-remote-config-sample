@@ -12,7 +12,7 @@ ENVIRONMENT = os.environ.get("ENVIRONMENT")
 PROJECT_ID = os.environ.get("PROJECT_ID")
 
 # check both ENVIRONMENT and PROJECT_ID exists
-if not ENVIRONMENT or PROJECT_ID:
+if ENVIRONMENT is None or PROJECT_ID is None:
   print("Project environment or project id is not assigned. Assign them in .envrc and activate.")
   sys.exit(1)
 
