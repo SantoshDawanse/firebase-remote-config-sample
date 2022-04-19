@@ -1,4 +1,5 @@
 import argparse
+import sys
 import requests
 import io
 import json
@@ -9,6 +10,12 @@ import os
 # load environment variable from .envrc file
 ENVIRONMENT = os.environ.get("ENVIRONMENT")
 PROJECT_ID = os.environ.get("PROJECT_ID")
+
+# check both ENVIRONMENT and PROJECT_ID exists
+if not ENVIRONMENT or PROJECT_ID:
+  print("Project environment or project id is not assigned. Assign them in .envrc and activate.")
+  sys.exit(1)
+
 BASE_URL = 'https://firebaseremoteconfig.googleapis.com'
 REMOTE_CONFIG_ENDPOINT = 'v1/projects/' + PROJECT_ID + '/remoteConfig'
 REMOTE_CONFIG_URL = BASE_URL + '/' + REMOTE_CONFIG_ENDPOINT
