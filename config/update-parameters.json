@@ -1,0 +1,10 @@
+{
+    "parameters": {
+        "welcome_message": {
+          "defaultValue": {
+            "value": "Welcome Santosh"
+          },
+          "valueType": "STRING"
+        }
+      }
+}

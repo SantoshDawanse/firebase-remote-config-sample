@@ -1,0 +1,14 @@
+{
+    "conditions": [
+        {
+            "name": "WebUsers",
+            "expression": "device.os == 'web'",
+            "tagColor": "RED"
+        },
+        {
+            "name": "Hello",
+            "expression": "message.text == 'hello'",
+            "tagColor": "GREEN"
+        }
+    ]
+}
